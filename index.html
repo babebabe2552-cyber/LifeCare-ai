@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeCare ai - ศูนย์ประเมินและดูแลสุขภาพจิต</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <!-- Main Style -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="sky-background">
+        <div class="clouds"></div>
+    </div>
+
+    <div id="app">
+        <!-- APP CONTAINER -->
+
+        <!-- 1. Intro View (Splash) -->
+        <div id="intro-view" class="view active">
+            <div class="center-content">
+                <i class="fa-solid fa-heart-pulse logo-icon"></i>
+                <h1 class="main-title">LifeCare ai</h1>
+                <p class="subtitle">เพื่อนคู่คิด ดูแลสุขภาพจิตของคุณ</p>
+                <div class="pulse-loader"></div>
+            </div>
+            <div id="intro-clickable-area" class="fullscreen-clickable"></div>
+        </div>
+
+        <!-- 2. Login & Setup View -->
+        <div id="login-view" class="view">
+            <div class="container slide-up">
+                <h2 style="color: var(--primary); margin-bottom: 5px;">ลงทะเบียนผู้ใช้ / เข้าสู่ระบบ</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">เราจำเป็นต้องขอข้อมูลนิดหน่อย เพื่อการดูแลที่ดียิ่งขึ้น</p>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>อีเมล (เพื่อจำประวัติของคุณ)</label>
+                        <input type="email" id="email" required placeholder="example@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อ (คุณต้องการให้เราเรียกคุณว่าอะไร?)</label>
+                        <input type="text" id="fullName" required placeholder="ชื่อของคุณ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>พิกัดของคุณ (เพื่อค้นหาสถานพยาบาลใกล้เคียง)</label>
+                        <button type="button" id="btn-get-location" class="btn btn-outline" style="width:100%; margin-bottom:5px;">
+                            <i class="fa-solid fa-location-dot"></i> ขออนุญาตเข้าถึงตำแหน่ง
+                        </button>
+                        <div id="location-status" class="status-msg">ยังไม่ได้กำหนดตำแหน่ง</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">
+                        เข้าสู่ระบบ
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. Dashboard / Menu View -->
+        <div id="dashboard-view" class="view">
+            <div class="dashboard-header fade-in">
+                <div class="header-content">
+                    <div class="user-info">
+                        <h2>สวัสดีคุณ <span id="display-name" style="color: var(--primary);"></span> 😊</h2>
+                        <p class="address-text"><i class="fa-solid fa-location-dot"></i> <span id="display-address">กำลังดึงข้อมูล...</span></p>
+                    </div>
+                    <button id="btn-logout" class="icon-btn" title="ออกจากระบบ"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+                
+                <!-- Random Motivation Card -->
+                <div class="motivation-card">
+                    <i class="fa-solid fa-quote-left quote-icon"></i>
+                    <p id="encouragement-text">กำลังโหลดข้อความดีๆ...</p>
+                </div>
+
+                <!-- Last Assessment Status -->
+                <div class="status-card">
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">ผลประเมินล่าสุด:</div>
+                    <div id="display-status" class="status-badge status-none">ยังไม่มีการประเมิน</div>
+                </div>
+            </div>
+
+            <div class="home-menu fade-in" style="flex-grow: 1; padding: 0 1.5rem 2rem 1.5rem;">
+                
+                <!-- Chat AI Function -->
+                <button class="btn btn-primary" id="btn-go-chat">
+                    <i class="fa-solid fa-robot"></i> มาคุยกันเถอะ (Ai Psychology)
+                </button>
+
+                <!-- Island of Mind Quiz Function -->
+                <button class="btn btn-outline" id="btn-go-island-quiz">
+                    <i class="fa-solid fa-cloud-sun"></i> แบบทดสอบลอยฟ้าค้นหาตัวตน
+                </button>
+                
+                <!-- Map Function -->
+                <button class="btn btn-outline" id="btn-go-map">
+                    <i class="fa-solid fa-hospital"></i> ค้นหาโรงพยาบาลใกล้เคียง
+                </button>
+                
+                <!-- Hotline Function -->
+                <a href="tel:1323" style="text-decoration: none;">
+                    <button class="btn btn-danger" style="width: 100%;">
+                        <i class="fa-solid fa-phone"></i> สายด่วนสุขภาพจิต 1323
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4. Chat AI View -->
+        <div id="chat-view" class="view">
+            <div class="back-header">
+                <button class="btn-back" onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <span style="font-weight:600;">Ai Psychology</span>
+                </div>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <!-- Chat Bubbles inside app.js -->
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="พิมพ์ข้อความของคุณที่นี่..." disabled>
+                <button id="btn-send-message" disabled><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <!-- 5. Island of Mind Quiz View (Canva style) -->
+        <div id="quiz-view" class="view" style="padding:0; background: #000;">
+            <div class="back-header" style="position: absolute; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: space-between;">
+                <button class="btn-back" onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</button>
+                <span id="quiz-header-text" style="font-weight:600; font-size:0.9rem;">เกาะลอยฟ้าแห่งจิตใจ (Island of Mind)</span>
+            </div>
+            
+            <div id="quiz-screen-container" style="width: 100%; height: 100%; position: relative; padding-top: 55px; background: #1B1E2B;">
+                <iframe loading="lazy" style="width: 100%; height: 100%; border: none;"
+                    src="https://www.canva.com/design/DAHFvRUxUNQ/iyhxt20s5uBt3jlK5yD2Ng/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- 7. Map View -->
+        <div id="map-view" class="view" style="padding:0; display: flex; flex-direction: column;">
+            <div class="back-header" style="background: white; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <button class="btn-back" onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                <span style="font-weight:600;">สถานพยาบาลและศูนย์บำบัดจิตใกล้คุณ</span>
+            </div>
+            <div id="hospital-map" style="flex-grow: 1; width: 100%;"></div>
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>
